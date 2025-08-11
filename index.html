@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facebook Ads Manager Pro</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .nav-tab {
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            margin: 0 5px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .nav-tab:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .nav-tab.active {
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .tab-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .login-form {
+            max-width: 400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #4ECDC4;
+            box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.1);
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .card h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .campaign-list {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .campaign-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            transition: background 0.3s ease;
+        }
+        
+        .campaign-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .campaign-item:last-child {
+            border-bottom: none;
+        }
+        
+        .campaign-name {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .campaign-status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-paused {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .ai-suggestions {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+        
+        .suggestion-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 5px solid #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Facebook Ads Manager Pro</h1>
+            <p>เครื่องมือจัดการโฆษณา Facebook ด้วย AI อัจฉริยะ</p>
+        </div>
+        
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('login')">🔐 เข้าสู่ระบบ</button>
+            <button class="nav-tab" onclick="showTab('campaigns')">📊 จัดการแคมเปญ</button>
+            <button class="nav-tab" onclick="showTab('targeting')">🎯 กลุ่มเป้าหมาย AI</button>
+            <button class="nav-tab" onclick="showTab('dashboard')">📈 Dashboard</button>
+        </div>
+        
+        <!-- Login Tab -->
+        <div id="login" class="tab-content active">
+            <div class="card">
+                <h2 style="text-align: center; margin-bottom: 30px; color: #333;">เชื่อมต่อกับ Facebook Ads Manager</h2>
+                <div class="login-form">
+                    <div class="form-group">
+                        <label for="fbAppId">Facebook App ID</label>
+                        <input type="text" id="fbAppId" placeholder="ป้อน Facebook App ID" />
+                    </div>
+                    <div class="form-group">
+                        <label for="fbAppSecret">Facebook App Secret</label>
+                        <input type="password" id="fbAppSecret" placeholder="ป้อน Facebook App Secret" />
+                    </div>
+                    <div class="form-group">
+                        <label for="accessToken">Access Token</label>
+                        <input type="text" id="accessToken" placeholder="ป้อน Access Token" />
+                    </div>
+                    <button class="btn" onclick="connectFacebook()">🔗 เชื่อมต่อ Facebook</button>
+                    <div id="loginMessage" class="hidden"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Campaigns Tab -->
+        <div id="campaigns" class="tab-content">
+            <div class="card">
+                <h2 style="margin-bottom: 20px; color: #333;">สร้างแคมเปญใหม่</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label for="campaignName">ชื่อแคมเปญ</label>
+                        <input type="text" id="campaignName" placeholder="เช่น Summer Sale 2025" />
+                    </div>
+                    <div class="form-group">
+                        <label for="campaignObjective">วัตถุประสงค์</label>
+                        <select id="campaignObjective">
+                            <option value="">เลือกวัตถุประสงค์</option>
+                            <option value="traffic">เพิ่มการเข้าชมเว็บไซต์</option>
+                            <option value="conversions">เพิ่มยอดขาย</option>
+                            <option value="reach">เพิ่มการเข้าถึง</option>
+                            <option value="engagement">เพิ่มการมีส่วนร่วม</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="budget">งบประมาณรายวัน (บาท)</label>
+                        <input type="number" id="budget" placeholder="1000" />
+                    </div>
+                    <div class="form-group">
+                        <label for="duration">ระยะเวลา (วัน)</label>
+                        <input type="number" id="duration" placeholder="7" />
+                    </div>
+                </div>
+                <button class="btn" onclick="createCampaign()">🚀 สร้างแคมเปญ</button>
+            </div>
+            
+            <div class="card">
+                <h3>แคมเปญที่มีอยู่</h3>
+                <div class="campaign-list" id="campaignList">
+                    <div class="campaign-item">
+                        <div>
+                            <div class="campaign-name">Summer Sale 2025</div>
+                            <small>วัตถุประสงค์: เพิ่มยอดขาย | งบประมาณ: ฿1,500/วัน</small>
+                        </div>
+                        <span class="campaign-status status-active">Active</span>
+                    </div>
+                    <div class="campaign-item">
+                        <div>
+                            <div class="campaign-name">Brand Awareness Campaign</div>
+                            <small>วัตถุประสงค์: เพิ่มการเข้าถึง | งบประมาณ: ฿800/วัน</small>
+                        </div>
+                        <span class="campaign-status status-paused">Paused</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Targeting Tab -->
+        <div id="targeting" class="tab-content">
+            <div class="card">
+                <h2 style="margin-bottom: 20px; color: #333;">🤖 AI Target Audience Generator</h2>
+                <div class="form-group">
+                    <label for="businessType">ประเภทธุรกิจ</label>
+                    <select id="businessType" onchange="generateAITargeting()">
+                        <option value="">เลือกประเภทธุรกิจ</option>
+                        <option value="ecommerce">E-commerce / ร้านค้าออนไลน์</option>
+                        <option value="restaurant">ร้านอาหาร</option>
+                        <option value="beauty">ความงาม/เสริมสวย</option>
+                        <option value="fitness">ฟิตเนส/สุขภาพ</option>
+                        <option value="education">การศึกษา</option>
+                        <option value="real-estate">อสังหาริมทรัพย์</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="productDescription">รายละเอียดสินค้า/บริการ</label>
+                    <textarea id="productDescription" rows="3" placeholder="บอกเล่าเกี่ยวกับสินค้าหรือบริการของคุณ..."></textarea>
+                </div>
+                <button class="btn" onclick="generateAITargeting()">🧠 สร้างกลุ่มเป้าหมายด้วย AI</button>
+            </div>
+            
+            <div id="aiTargetingResult" class="hidden">
+                <div class="ai-suggestions">
+                    <h3>🎯 คำแนะนำกลุ่มเป้าหมายจาก AI</h3>
+                    <div id="targetingSuggestions"></div>
+                </div>
+                
+                <div class="card">
+                    <h3>ตั้งค่ากลุ่มเป้าหมายแบบละเอียด</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label>อายุ</label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="number" placeholder="จาก" min="13" max="65" />
+                                <input type="number" placeholder="ถึง" min="13" max="65" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>เพศ</label>
+                            <select>
+                                <option value="all">ทุกเพศ</option>
+                                <option value="male">ชาย</option>
+                                <option value="female">หญิง</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>สถานที่</label>
+                            <input type="text" placeholder="เช่น กรุงเทพฯ, ไทย" />
+                        </div>
+                        <div class="form-group">
+                            <label>ความสนใจ</label>
+                            <input type="text" placeholder="เช่น แฟชั่น, อาหาร, เทคโนโลยี" />
+                        </div>
+                    </div>
+                    <button class="btn" onclick="saveTargeting()">💾 บันทึกการตั้งค่า</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">15.2K</div>
+                    <div class="stat-label">การเข้าถึงรวม</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1,248</div>
+                    <div class="stat-label">คลิกทั้งหมด</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">8.2%</div>
+                    <div class="stat-label">อัตราคลิก (CTR)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">฿24.50</div>
+                    <div class="stat-label">ค่าใช้จ่ายต่อคลิก</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">186</div>
+                    <div class="stat-label">การแปลงสภาพ</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">฿185.40</div>
+                    <div class="stat-label">ค่าใช้จ่ายต่อการแปลง</div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>📊 กราฟผลการดำเนินงาน</h3>
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>🏆 แคมเปญที่มีประสิทธิภาพสูงสุด</h3>
+                <div class="campaign-list">
+                    <div class="campaign-item">
+                        <div>
+                            <div class="campaign-name">Summer Sale 2025</div>
+                            <small>CTR: 12.5% | CPC: ฿18.20 | Conversions: 124</small>
+                        </div>
+                        <span class="campaign-status status-active">Top Performer</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="ai-suggestions">
+                <h3>💡 คำแนะนำจาก AI</h3>
+                <div class="suggestion-item">
+                    <strong>เพิ่มงบประมาณ:</strong> แคมเปญ "Summer Sale 2025" มี CTR สูง แนะนำให้เพิ่มงบประมาณ 30% เพื่อเพิ่มการเข้าถึง
+                </div>
+                <div class="suggestion-item">
+                    <strong>ปรับกลุ่มเป้าหมาย:</strong> ลองเพิ่มกลุ่มอายุ 35-44 ปี ซึ่งมี conversion rate สูงถึง 15.2%
+                </div>
+                <div class="suggestion-item">
+                    <strong>เปลี่ยนเวลาแสดงโฆษณา:</strong> ข้อมูลแสดงว่าช่วง 19:00-22:00 น. มี engagement สูงสุด
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let isConnected = false;
+        let campaigns = [];
+        let targetingData = {};
+
+        // Tab navigation
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all nav tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked nav tab
+            event.target.classList.add('active');
+            
+            // Initialize dashboard chart when dashboard tab is shown
+            if (tabName === 'dashboard') {
+                setTimeout(initChart, 100);
+            }
+        }
+
+        // Facebook connection
+        function connectFacebook() {
+            const appId = document.getElementById('fbAppId').value;
+            const appSecret = document.getElementById('fbAppSecret').value;
+            const accessToken = document.getElementById('accessToken').value;
+            
+            if (!appId || !appSecret || !accessToken) {
+                showMessage('loginMessage', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'error');
+                return;
+            }
+            
+            // Simulate connection process
+            showMessage('loginMessage', 'กำลังเชื่อมต่อ Facebook...', 'info');
+            
+            setTimeout(() => {
+                isConnected = true;
+                showMessage('loginMessage', '✅ เชื่อมต่อ Facebook สำเร็จ! คุณสามารถใช้งานได้แล้ว', 'success');
+                
+                // Enable other tabs
+                document.querySelectorAll('.nav-tab').forEach(tab => {
+                    tab.style.opacity = '1';
+                    tab.style.pointerEvents = 'auto';
+                });
+            }, 2000);
+        }
+
+        // Campaign management
+        function createCampaign() {
+            if (!isConnected) {
+                alert('กรุณาเชื่อมต่อ Facebook ก่อน');
+                return;
+            }
+            
+            const name = document.getElementById('campaignName').value;
+            const objective = document.getElementById('campaignObjective').value;
+            const budget = document.getElementById('budget').value;
+            const duration = document.getElementById('duration').value;
+            
+            if (!name || !objective || !budget || !duration) {
+                alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+                return;
+            }
+            
+            // Add campaign to list
+            const campaign = {
+                name: name,
+                objective: objective,
+                budget: budget,
+                duration: duration,
+                status: 'Active'
+            };
+            
+            campaigns.push(campaign);
+            updateCampaignList();
+            
+            // Clear form
+            document.getElementById('campaignName').value = '';
+            document.getElementById('campaignObjective').value = '';
+            document.getElementById('budget').value = '';
+            document.getElementById('duration').value = '';
+            
+            alert('✅ สร้างแคมเปญสำเร็จ!');
+        }
+
+        function updateCampaignList() {
+            const list = document.getElementById('campaignList');
+            const objectiveMap = {
+                'traffic': 'เพิ่มการเข้าชมเว็บไซต์',
+                'conversions': 'เพิ่มยอดขาย',
+                'reach': 'เพิ่มการเข้าถึง',
+                'engagement': 'เพิ่มการมีส่วนร่วม'
+            };
+            
+            list.innerHTML = campaigns.map(campaign => `
+                <div class="campaign-item">
+                    <div>
+                        <div class="campaign-name">${campaign.name}</div>
+                        <small>วัตถุประสงค์: ${objectiveMap[campaign.objective]} | งบประมาณ: ฿${campaign.budget}/วัน</small>
+                    </div>
+                    <span class="campaign-status status-active">${campaign.status}</span>
+                </div>
+            `).join('');
+        }
+
+        // AI Targeting
+        function generateAITargeting() {
+            const businessType = document.getElementById('businessType').value;
+            const description = document.getElementById('productDescription').value;
+            
+            if (!businessType) {
+                alert('กรุณาเลือกประเภทธุรกิจ');
+                return;
+            }
+            
+            const targetingMap = {
+                'ecommerce': {
+                    suggestions: [
+                        'กลุ่มเป้าหมาย: ผู้ใช้งานที่มีพฤติกรรมการซื้อของออนไลน์',
+                        'อายุ: 25-45 ปี (กลุ่มที่มีกำลังซื้อสูง)',
+                        'ความสนใจ: แฟชั่น, เทคโนโลยี, การช็อปปิ้ง',
+                        'พฤติกรรม: เพิ่มสินค้าลงตะกร้าแต่ไม่ซื้อ, ซื้อของออนไลน์บ่อย'
+                    ]
+                },
+                'restaurant': {
+                    suggestions: [
+                        'กลุ่มเป้าหมาย: คนรักอาหาร และผู้ที่อยู่ใกล้ร้าน',
+                        'อายุ: 20-50 ปี',
+                        'ความสนใจ: อาหาร, ร้านอาหาร, การท่องเที่ยว',
+                        'สถานที่: รัศมี 5 กม. จากร้าน',
+                        'เวลา: ช่วงเวลาอาหาร (11:30-14:00, 17:30-21:00)'
+                    ]
+                },
+                'beauty': {
+                    suggestions: [
+                        'กลุ่มเป้าหมาย: ผู้หญิงที่สนใจความงาม',
+                        'อายุ: 18-40 ปี',
+                        'ความสนใจ: เครื่องสำอาง, สกินแคร์, แฟชั่น',
+                        'พฤติกรรม: ติดตามแบรนด์ความงาม, ดู beauty tutorials'
+                    ]
+                },
+                'fitness': {
+                    suggestions: [
+                        'กลุ่มเป้าหมาย: คนรักสุขภาพและออกกำลังกาย',
+                        'อายุ: 20-45 ปี',
+                        'ความสนใจ: ออกกำลังกาย, สุขภาพ, โภชนาการ',
+                        'พฤติกรรม: เข้าชมเนื้อหาเกี่ยวกับฟิตเนส, ใช้แอปออกกำลังกาย'
+                    ]
+                }
+            };
+            
+            const suggestions = targetingMap[businessType] || {
+                suggestions: ['AI กำลังวิเคราะห์ธุรกิจของคุณ...', 'แนะนำกลุ่มเป้าหมายทั่วไป: อายุ 25-45 ปี', 'ควรทดสอบกลุ่มเป้าหมายหลายกลุ่มพร้อมกัน']
+            };
+            
+            const suggestionsHtml = suggestions.suggestions.map(suggestion => `
+                <div class="suggestion-item">🤖 ${suggestion}</div>
+            `).join('');
+            
+            document.getElementById('targetingSuggestions').innerHTML = suggestionsHtml;
+            document.getElementById('aiTargetingResult').classList.remove('hidden');
+        }
+
+        function saveTargeting() {
+            alert('✅ บันทึกการตั้งค่ากลุ่มเป้าหมายสำเร็จ!');
+        }
+
+        // Dashboard Chart
+        function initChart() {
+            const ctx = document.getElementById('performanceChart');
+            if (!ctx || ctx.chart) return;
+            
+            ctx.chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['วันที่ 1', 'วันที่ 2', 'วันที่ 3', 'วันที่ 4', 'วันที่ 5', 'วันที่ 6', 'วันที่ 7'],
+                    datasets: [{
+                        label: 'การเข้าถึง',
+                        data: [1200, 1900, 3000, 2500, 3200, 3000, 4000],
+                        borderColor: '#FF6B6B',
+                        backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'คลิก',
+                        data: [65, 120, 240, 200, 260, 240, 320],
+                        borderColor: '#4ECDC4',
+                        backgroundColor: 'rgba(78, 205, 196, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'การแปลงสภาพ',
+                        data: [8, 15, 28, 22, 32, 28, 38],
+                        borderColor: '#45B7D1',
+                        backgroundColor: 'rgba(69, 183, 209, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        }
+                    },
+                    elements: {
+                        point: {
+                            radius: 5,
+                            hoverRadius: 8
+                        }
+                    }
+                }
+            });
+        }
+
+        // Helper functions
+        function showMessage(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.className = type === 'success' ? 'success-message' : 
+                               type === 'error' ? 'error-message' : 'info-message';
+            element.innerHTML = message;
+            element.classList.remove('hidden');
+            
+            if (type === 'info') {
+                element.style.background = '#cce7ff';
+                element.style.color = '#004085';
+                element.style.borderLeft = '5px solid #007bff';
+            } else if (type === 'error') {
+                element.style.background = '#f8d7da';
+                element.style.color = '#721c24';
+                element.style.borderLeft = '5px solid #dc3545';
+            }
+            
+            element.style.padding = '15px';
+            element.style.borderRadius = '10px';
+            element.style.margin = '15px 0';
+        }
+
+        // Real-time data simulation
+        function simulateRealTimeData() {
+            const statCards = document.querySelectorAll('.stat-value');
+            if (statCards.length > 0) {
+                setInterval(() => {
+                    // Simulate small changes in stats
+                    statCards.forEach((card, index) => {
+                        if (index === 0) { // Reach
+                            const currentValue = parseFloat(card.textContent.replace('K', '')) || 15.2;
+                            const newValue = currentValue + (Math.random() - 0.5) * 0.1;
+                            card.textContent = newValue.toFixed(1) + 'K';
+                        } else if (index === 1) { // Clicks
+                            const currentValue = parseInt(card.textContent.replace(',', '')) || 1248;
+                            const newValue = currentValue + Math.floor((Math.random() - 0.5) * 10);
+                            card.textContent = newValue.toLocaleString();
+                        }
+                    });
+                }, 5000); // Update every 5 seconds
+            }
+        }
+
+        // Advanced AI features
+        function optimizeCampaign(campaignId) {
+            alert('🤖 AI กำลังวิเคราะห์และปรับปรุงแคมเปญของคุณ...\n\n✅ ปรับ bid strategy\n✅ เพิ่มประสิทธิภาพ targeting\n✅ ปรับเวลาแสดงโฆษณา\n\nการปรับปรุงจะมีผลภายใน 24 ชั่วโมง');
+        }
+
+        function exportReport() {
+            const reportData = {
+                campaigns: campaigns.length,
+                totalReach: '15.2K',
+                totalClicks: '1,248',
+                ctr: '8.2%',
+                cpc: '฿24.50',
+                conversions: '186',
+                costPerConversion: '฿185.40',
+                generatedAt: new Date().toLocaleString('th-TH')
+            };
+            
+            const reportText = `
+Facebook Ads Performance Report
+================================
+สร้างเมื่อ: ${reportData.generatedAt}
+
+📊 สรุปผลงาน
+- จำนวนแคมเปญ: ${reportData.campaigns}
+- การเข้าถึงรวม: ${reportData.totalReach}
+- คลิกทั้งหมด: ${reportData.totalClicks}
+- อัตราคลิก (CTR): ${reportData.ctr}
+- ค่าใช้จ่ายต่อคลิก: ${reportData.cpc}
+- การแปลงสภาพ: ${reportData.conversions}
+- ค่าใช้จ่ายต่อการแปลง: ${reportData.costPerConversion}
+
+💡 คำแนะนำจาก AI
+1. เพิ่มงบประมาณแคมเปญที่มี CTR สูง
+2. ปรับกลุ่มเป้าหมายตามข้อมูล conversion
+3. ทดสอบเวลาแสดงโฆษณาใหม่
+            `;
+            
+            const blob = new Blob([reportText], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `facebook-ads-report-${new Date().toISOString().split('T')[0]}.txt`;
+            link.click();
+        }
+
+        // A/B Testing feature
+        function createABTest() {
+            alert('🧪 สร้าง A/B Test สำเร็จ!\n\nกำลังทดสอบ:\n- รูปแบบโฆษณา A vs B\n- กลุ่มเป้าหมายแบบที่ 1 vs 2\n- เวลาแสดงโฆษณา\n\nผลการทดสอบจะพร้อมใน 3-5 วัน');
+        }
+
+        // Audience insights
+        function getAudienceInsights() {
+            const insights = [
+                '👥 กลุ่มอายุ 25-34 ปี มี engagement สูงสุด (35%)',
+                '📱 83% ของผู้ใช้เข้าชมจากมือถือ',
+                '🕐 ช่วงเวลา 19:00-22:00 น. มีการคลิกสูงสุด',
+                '📍 กรุงเทพฯ และปริมณฑลมีการแปลงสภาพสูงสุด',
+                '💰 ผู้ใช้ที่มีรายได้ปานกลางถึงสูงมี conversion rate ดีที่สุด'
+            ];
+            
+            alert('📊 Audience Insights\n\n' + insights.join('\n\n'));
+        }
+
+        // Automated rules
+        function setupAutomatedRules() {
+            alert('⚙️ ตั้งค่า Automated Rules สำเร็จ!\n\n📋 กฎที่ตั้งไว้:\n- หยุดโฆษณาเมื่อ CPC > ฿50\n- เพิ่มงบประมาณเมื่อ CTR > 10%\n- ส่งแจ้งเตือนเมื่อ conversion ลดลง 20%\n- ปรับ bid เมื่อ ad frequency > 3');
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Disable other tabs initially
+            document.querySelectorAll('.nav-tab').forEach((tab, index) => {
+                if (index > 0) {
+                    tab.style.opacity = '0.5';
+                    tab.style.pointerEvents = 'none';
+                }
+            });
+            
+            // Add additional buttons to dashboard
+            const dashboardContent = document.getElementById('dashboard');
+            if (dashboardContent) {
+                const buttonContainer = document.createElement('div');
+                buttonContainer.style.textAlign = 'center';
+                buttonContainer.style.marginTop = '30px';
+                buttonContainer.innerHTML = `
+                    <button class="btn" onclick="exportReport()">📊 ส่งออกรายงาน</button>
+                    <button class="btn btn-secondary" onclick="createABTest()">🧪 สร้าง A/B Test</button>
+                    <button class="btn" onclick="getAudienceInsights()">👥 Audience Insights</button>
+                    <button class="btn btn-secondary" onclick="setupAutomatedRules()">⚙️ Automated Rules</button>
+                `;
+                dashboardContent.appendChild(buttonContainer);
+            }
+            
+            // Start real-time data simulation
+            setTimeout(simulateRealTimeData, 1000);
+            
+            console.log('🚀 Facebook Ads Manager Pro พร้อมใช้งาน!');
+        });
+    </script>
+</body>
+</html>
